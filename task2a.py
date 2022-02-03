@@ -57,8 +57,8 @@ class BinaryModel:
             y: output of model with shape [batch size, 1]
         """
         # TODO implement this function (Task 2a)
-        
-        y = 1 / (1 + np.exp(-X@self.w))
+
+        y = 1 / (1 + np.exp(-X.dot(self.w)))
         return y
 
     def backward(self, X: np.ndarray, outputs: np.ndarray, targets: np.ndarray) -> None:
