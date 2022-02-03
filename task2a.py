@@ -15,10 +15,11 @@ def pre_process_images(X: np.ndarray):
     # TODO implement this function (Task 2a)
     # Initializing with 784 + 1 zeros. The +1 is to include the "bias trick"
     new_X = np.zeros((X.shape[0], X.shape[1]+1))
-
+    
     # For each pixel in each image we normalize the pixel value between [-1,1], and add a 1 to include the bias trick
-    for i, batch in enumerate(X):
-        new_X[i, :-1] = ((batch/255.0)*2.0)-1.0
+    num_images=X.shape[0]
+    for i in range(num_images):
+        new_X[i, :-1]=(X[i,:]/255.0)*2.0-1.0
     new_X[:, -1] = 1.0
     return new_X
 
