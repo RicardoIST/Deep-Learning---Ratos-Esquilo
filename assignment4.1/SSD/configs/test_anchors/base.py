@@ -23,7 +23,7 @@ train.imshape = (128, 1024)
 
 
 anchors = L(AnchorBoxes)(
-    feature_sizes=[[32, 256], [16, 128], [8, 64], [4, 32], [2, 16], [1, 8]],
+    feature_sizes= [[32, 256], [16, 128], [8, 64], [4, 32], [2, 16], [1, 8]],
     # Strides is the number of pixels (in image space) between each spatial position in the feature map
     strides= [[4, 4], [8, 8], [16, 16], [32, 32], [64, 64], [128, 128]],
     min_sizes=[[16, 16], [32, 32], [48, 48], [64, 64], [86, 86], [128, 128], [128, 400]],
