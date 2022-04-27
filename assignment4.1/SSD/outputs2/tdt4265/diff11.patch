@@ -1,0 +1,72 @@
+On branch main
+Your branch is ahead of 'origin/main' by 1 commit.
+  (use "git push" to publish your local commits)
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   requirements.txt
+	modified:   ssd/modeling/anchor_encoder.py
+	modified:   ssd/modeling/backbones/basic.py
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	datasets/
+
+no changes added to commit (use "git add" and/or "git commit -a")
+a5d563d1606ce8088a03f64520d89536ad965085
+diff --git a/assignment4.1/SSD/requirements.txt b/assignment4.1/SSD/requirements.txt
+index 77ae212..8b325e7 100644
+--- a/assignment4.1/SSD/requirements.txt
++++ b/assignment4.1/SSD/requirements.txt
+@@ -1,6 +1,6 @@
+-Cython>=0.28.
+-scikit-image
+-ujson
++Cython>=0.28. #yes
++scikit-image #yes
++ujson #yes
+ pybind11
+ git+https://github.com/NVIDIA/cocoapi.git@v0.6.0#subdirectory=PythonAPI
+ pycocotools==2.0.0
+diff --git a/assignment4.1/SSD/ssd/modeling/anchor_encoder.py b/assignment4.1/SSD/ssd/modeling/anchor_encoder.py
+index e770c34..4ed096d 100644
+--- a/assignment4.1/SSD/ssd/modeling/anchor_encoder.py
++++ b/assignment4.1/SSD/ssd/modeling/anchor_encoder.py
+@@ -77,7 +77,7 @@ class AnchorEncoder(object):
+         # filter IoU > 0.5
+         masks = best_target_per_anchor > iou_threshold
+         labels_out = torch.zeros(self.nboxes, dtype=torch.long)
+-        labels_out[masks] = labels_in[best_target_per_anchor_idx[masks]]
++        labels_out[masks] = labels_in[best_target_per_anchor_idx[masks]].long()
+         bboxes_out = self.anchors.clone()
+         bboxes_out[masks, :] = bboxes_in[best_target_per_anchor_idx[masks], :]
+         # Transform format to xywh format
+diff --git a/assignment4.1/SSD/ssd/modeling/backbones/basic.py b/assignment4.1/SSD/ssd/modeling/backbones/basic.py
+index 48df662..ea86448 100644
+--- a/assignment4.1/SSD/ssd/modeling/backbones/basic.py
++++ b/assignment4.1/SSD/ssd/modeling/backbones/basic.py
+@@ -133,17 +133,17 @@ class BasicModel(torch.nn.Module):
+                 nn.Conv2d(
+                     in_channels=output_channels[4],
+                     out_channels=128,
+-                    kernel_size=3,
+-                    stride=1,
+-                    padding=1
++                    kernel_size=2,
++                    stride=2,
++                    padding=0
+                 ),
+                 nn.ReLU(),
+                 nn.Conv2d(
+                     in_channels=128,
+                     out_channels=output_channels[5],
+-                    kernel_size=3,
+-                    stride=2,
+-                    padding=1
++                    kernel_size=1,
++                    stride=1,
++                    padding=0
+                 ),
+                 nn.ReLU(),
+             ),

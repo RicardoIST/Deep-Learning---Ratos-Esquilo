@@ -1,0 +1,306 @@
+On branch main
+Your branch is up to date with 'origin/main'.
+
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   ssd/modeling/backbones/basic.py
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	datasets/
+
+no changes added to commit (use "git add" and/or "git commit -a")
+fc8dff9707ebd557422cbb26302646531fc51511
+diff --git a/assignment4.1/SSD/ssd/modeling/backbones/basic.py b/assignment4.1/SSD/ssd/modeling/backbones/basic.py
+index 91ef094..e976ecc 100644
+--- a/assignment4.1/SSD/ssd/modeling/backbones/basic.py
++++ b/assignment4.1/SSD/ssd/modeling/backbones/basic.py
+@@ -1,3 +1,4 @@
++import torch
+ from torch import nn
+ from typing import Tuple, List
+ 
+@@ -18,20 +19,14 @@ class BasicModel(torch.nn.Module):
+             image_channels: int,
+             output_feature_sizes: List[Tuple[int]]):
+         super().__init__()
+-        self.out_channels = output_channels
+-        self.output_feature_shape = output_feature_sizes
+ 
+-        self.out_features = nn.Sequential(
+-            nn.Conv2d(
+-                in_channels=image_channels,
+-                out_channels=32,
+-                kernel_size=3,
+-                stride=1,
+-                padding=1
+-            ),
+-            nn.ReLU(),
+-            nn.MaxPool2d(kernel_size=2, stride=2),
+ 
++        self.out_channels = output_channels
++        self.output_feature_shape = output_feature_sizes
++        self.feature_extractor = nn.Sequential(#sol
++            nn.Conv2d(image_channels, 32, kernel_size=3, padding=1),#sol
++            nn.ReLU(),#sol
++            nn.MaxPool2d(kernel_size=2,stride=2), 
+             nn.Conv2d(
+                 in_channels=32,
+                 out_channels=64,
+@@ -39,7 +34,7 @@ class BasicModel(torch.nn.Module):
+                 stride=1,
+                 padding=1
+             ),
+-            nn.ReLU(),
++            nn.ReLU(),#sol
+             nn.Conv2d(
+                 in_channels=64,
+                 out_channels=64,
+@@ -47,7 +42,8 @@ class BasicModel(torch.nn.Module):
+                 stride=1,
+                 padding=1
+             ),
+-            nn.ReLU(),
++            nn.ReLU(),#sol
++            # Use ceil mode to get 75/2 to ouput 38#sol
+             nn.Conv2d(
+                 in_channels=64,
+                 out_channels=output_channels[0],
+@@ -55,122 +51,111 @@ class BasicModel(torch.nn.Module):
+                 stride=2,
+                 padding=1
+             ),
+-            nn.ReLU(),
+-
+-            #module 1 up
+-
+-            nn.Conv2d(
+-                in_channels=output_channels[0],
+-                out_channels=128,
+-                kernel_size=3,
+-                stride=1,
+-                padding=1
+-            ),
+-            nn.ReLU(),
+-            nn.Conv2d(
+-                in_channels=128,
+-                out_channels=output_channels[1],
+-                kernel_size=3,
+-                stride=2,
+-                padding=1
+-            ),
+-            nn.ReLU(),
+-            
+-            #module 2 up
+-
+-            nn.Conv2d(
+-                in_channels=output_channels[1],
+-                out_channels=256,
+-                kernel_size=3,
+-                stride=1,
+-                padding=1
+-            ),
+-            nn.ReLU(),
+-            nn.Conv2d(
+-                in_channels=256,
+-                out_channels=output_channels[2],
+-                kernel_size=3,
+-                stride=2,
+-                padding=1
+-            ),
+-            nn.ReLU(),
+-
+-            #Module 3 up
+-
+-            nn.Conv2d(
+-                in_channels=output_channels[2],
+-                out_channels=128,
+-                kernel_size=3,
+-                stride=1,
+-                padding=1
+-            ),
+-            nn.ReLU(),
+-            nn.Conv2d(
+-                in_channels=128,
+-                out_channels=output_channels[3],
+-                kernel_size=3,
+-                stride=2,
+-                padding=1
+-            ),
+-            nn.ReLU(),
++            nn.ReLU(),#sol
++        ) #sol
++        self.additional_layers = torch.nn.ModuleList([#sol
++            nn.Sequential( # 19 x 19 out#sol
++                nn.Conv2d(
++                    in_channels=output_channels[0],
++                    out_channels=128,
++                    kernel_size=3,
++                    stride=1,
++                    padding=1
++                ),
++                nn.ReLU(),
++                nn.Conv2d(
++                    in_channels=128,
++                    out_channels=output_channels[1],
++                    kernel_size=3,
++                    stride=2,
++                    padding=1
++                ),
++                nn.ReLU(),#sol
++            ),#sol
++            nn.Sequential( 
++                nn.Conv2d(
++                    in_channels=output_channels[1],
++                    out_channels=256,
++                    kernel_size=3,
++                    stride=1,
++                    padding=1
++                ),
++                nn.ReLU(),
++                nn.Conv2d(
++                    in_channels=256,
++                    out_channels=output_channels[2],
++                    kernel_size=3,
++                    stride=2,
++                    padding=1
++                ),
++                nn.ReLU(),#sol
++            ),#sol
++            nn.Sequential( # 5 x 5 out#sol
++                nn.Conv2d(
++                    in_channels=output_channels[2],
++                    out_channels=128,
++                    kernel_size=3,
++                    stride=1,
++                    padding=1
++                ),
++                nn.ReLU(),#sol
++                nn.Conv2d(
++                    in_channels=128,
++                    out_channels=output_channels[3],
++                    kernel_size=3,
++                    stride=2,
++                    padding=1
++                ),
++                nn.ReLU(),
++            ),#sol
++            nn.Sequential( # 3 x 3 out#sol
++                nn.Conv2d(
++                    in_channels=output_channels[3],
++                    out_channels=128,
++                    kernel_size=3,
++                    stride=1,
++                    padding=1
++                ),
++                nn.ReLU(),
++                nn.Conv2d(
++                    in_channels=128,
++                    out_channels=output_channels[4],
++                    kernel_size=3,
++                    stride=2,
++                    padding=1
++                ),
++                nn.ReLU(),
++                
++            ),#sol
++            nn.Sequential( # 1 x 1 out#sol
++                nn.Conv2d(
++                    in_channels=output_channels[4],
++                    out_channels=128,
++                    kernel_size=2,
++                    stride=1,
++                    padding=1
++                ),
++                nn.ReLU(),
++                nn.Conv2d(
++                    in_channels=128,
++                    out_channels=output_channels[5],
++                    kernel_size=2,
++                    stride=1,
++                    padding=0
++                ),
++                nn.ReLU(),
++            ),#sol
++        ])#sol
++
++        '''self.out_channels = output_channels
++        self.output_feature_shape = output_feature_sizes
+ 
+-            #Module 4 up
++        self.out_features = nn.Sequential(
+ 
+-            nn.Conv2d(
+-                in_channels=output_channels[3],
+-                out_channels=128,
+-                kernel_size=3,
+-                stride=1,
+-                padding=1
+-            ),
+-            nn.ReLU(),
+-            nn.Conv2d(
+-                in_channels=128,
+-                out_channels=output_channels[3],
+-                kernel_size=3,
+-                stride=2,
+-                padding=1
+-            ),
+-            nn.ReLU(),
++        
+             
+-            #Module 5 up
+-
+-            nn.Conv2d(
+-                in_channels=output_channels[3],
+-                out_channels=128,
+-                kernel_size=3,
+-                stride=1,
+-                padding=1
+-            ),
+-            nn.ReLU(),
+-            nn.Conv2d(
+-                in_channels=128,
+-                out_channels=output_channels[4],
+-                kernel_size=3,
+-                stride=2,
+-                padding=1
+-            ),
+-            nn.ReLU(),
+-
+-            #Module 6 up
+-
+-            nn.Conv2d(
+-                in_channels=output_channels[4],
+-                out_channels=128,
+-                kernel_size=2,
+-                stride=1,
+-                padding=1
+-            ),
+-            nn.ReLU(),
+-            nn.Conv2d(
+-                in_channels=128,
+-                out_channels=output_channels[5],
+-                kernel_size=2,
+-                stride=1,
+-                padding=0
+-            ),
+-            nn.ReLU(),
+-        )
++        )'''
++        
+ 
+     def forward(self, x):
+         """
+@@ -186,6 +171,11 @@ class BasicModel(torch.nn.Module):
+             shape(-1, output_channels[0], 38, 38),
+         """
+         out_features = []
++        x = self.feature_extractor(x)#sol
++        out_features.append(x)#sol
++        for additional_layer in self.additional_layers.children():#sol
++            x = additional_layer(x)#sol
++            out_features.append(x)#sol
+         for idx, feature in enumerate(out_features):
+             out_channel = self.out_channels[idx]
+             h, w = self.output_feature_shape[idx]
