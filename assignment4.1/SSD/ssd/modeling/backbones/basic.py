@@ -133,17 +133,17 @@ class BasicModel(torch.nn.Module):
                 nn.Conv2d(
                     in_channels=output_channels[4],
                     out_channels=128,
-                    kernel_size=3,
-                    stride=1,
-                    padding=1
+                    kernel_size=2,
+                    stride=2,
+                    padding=0
                 ),
                 nn.ReLU(),
                 nn.Conv2d(
                     in_channels=128,
                     out_channels=output_channels[5],
-                    kernel_size=3,
-                    stride=2,
-                    padding=1
+                    kernel_size=1,
+                    stride=1,
+                    padding=0
                 ),
                 nn.ReLU(),
             ),

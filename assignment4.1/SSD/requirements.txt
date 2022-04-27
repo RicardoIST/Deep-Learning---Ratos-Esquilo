@@ -1,6 +1,6 @@
-Cython>=0.28.
-scikit-image
-ujson
+Cython>=0.28. #yes
+scikit-image #yes
+ujson #yes
 pybind11
 git+https://github.com/NVIDIA/cocoapi.git@v0.6.0#subdirectory=PythonAPI
 pycocotools==2.0.0
