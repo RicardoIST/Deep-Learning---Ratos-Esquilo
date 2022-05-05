@@ -30,7 +30,7 @@ from ..tdt4265 import (
 # Change the imshape to (128, 1024) and experiment with better prior boxes
 train.imshape = (128, 1024)
 train.epoch=40
-model.num_classes = 10 + 1  # Add 1 for background class
+model.num_classes = 8 + 1  # Add 1 for background class
 
 
 anchors = L(AnchorBoxes)(
@@ -48,13 +48,6 @@ anchors = L(AnchorBoxes)(
     scale_center_variance=0.1,
     scale_size_variance=0.2
 )
-
-backbone = L(backbones.BasicModel)(
-    output_channels=[128, 256, 128, 128, 64, 64],
-    image_channels="${train.image_channels}",
-    output_feature_sizes="${anchors.feature_sizes}"
-)
-
 
 
 train_cpu_transform = L(torchvision.transforms.Compose)(transforms=[
